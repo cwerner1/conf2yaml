@@ -2,7 +2,7 @@
 
 Python script to convert Cisco IOS/IOS-XE/NX-OS device config into YAML data, suitable for use in Ansible.
 
-I've forked this as I need a different YAML format and wanted to update to a current Python version.
+I've forked this because I want to take it in a different direction. I need a different YAML format and wanted to update to a current Python version.
 
 ## Motivation
 
