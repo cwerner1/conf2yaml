@@ -11,7 +11,6 @@ def main():
   # Permit limited configuration via command-line args
   debug = False                         # Debug YAML to console defaults to off: enable with --debug
   root_path = 'configurations/'         # Root dir is 'configurations': modify with --root="mydir"
-  domain = 'nwid.bris.ac.uk'            # Default domain is 'nwid.bris.ac.uk': modify with --domain="mydomain"
   if (len(sys.argv) > 1):
     for arg in sys.argv:
       if arg == '--debug':
@@ -20,27 +19,24 @@ def main():
         head, sep, directory_value = arg.partition('=')
         if directory_value != '':
           root_path = directory_value.replace('"', '') + '/'
-      if arg[:8] == '--domain':
-        head, sep, domain_value = arg.partition('=')
-        if domain_value != '':
-          domain = domain_value.replace('"', '')
   
-  subdirs = walk(root_path).next()[1]   # obtain all subdirectories
-  subdirs.append('')                    # add root directory
+  subdirs = [x[1] for x in walk(root_path)] # obtain all subdirectories
+  print(subdirs)
+  subdirs.append('.')                    # add root directory
 
   # Parse all files in all subdirectories
-  for subdir in subdirs:
-    files = [filename for filename in listdir(root_path + subdir) if isfile(join(root_path + subdir, filename))]
+  for subdir, dirs, files in walk(root_path):
     for filename in files:
+      print(join(subdir, filename))
       if filename != '.gitignore':                                              # Do not parse .gitignores
-        input = CiscoConfParse(root_path + subdir + '/' + filename)             # Get our CiscoConfParse-formatted input
+        input = CiscoConfParse(subdir + '/' + filename)             # Get our CiscoConfParse-formatted input
         output_yaml = convert_to_yaml(input)                                    # Parse input config into output YAML
-        output_path = 'yaml/' + root_path + subdir
-        print('Outputting ' + output_path + splitext(filename)[0] + '.' + domain + '.yml YAML')
-        write_output_yaml_to_file(output_yaml, output_path, filename, domain)   # Write our YAML to disk
+        output_path = 'yaml/' + subdir + '/'
+        print('Outputting ' + output_path + splitext(filename)[0] + '.yml YAML')
+        write_output_yaml_to_file(output_yaml, output_path, filename)   # Write our YAML to disk
         if (debug):                                                             # If debug mode specified output YAML to console
-          print(output_path + splitext(filename)[0] + '.' + domain + '.yml YAML Output:')
-          print output_yaml
+          print(output_path + splitext(filename)[0] + '.yml YAML Output:')
+          print(output_yaml)
 
 
 # The workhorse function that reads the Cisco config and returns our output config object
@@ -368,13 +364,13 @@ def convert_to_yaml(input_config):
 
   return yaml.dump(output_config, default_flow_style = 0, explicit_start = 1)
 
-def write_output_yaml_to_file(output_yaml, output_path, filename, domain):
+def write_output_yaml_to_file(output_yaml, output_path, filename):
   # Make sure the directory we're trying to write to exists. Create it if it doesn't
   if not exists(output_path):
     makedirs(output_path)
 
   # Write foo.yml to the subdir in yaml/root_path that corresponds to where we got the input file
-  with open(output_path + splitext(filename)[0] + '.' + domain + '.yml', 'w') as outfile:
+  with open(output_path + splitext(filename)[0] + '.yml', 'w') as outfile:
     outfile.write(output_yaml)
 
 if __name__ == '__main__':

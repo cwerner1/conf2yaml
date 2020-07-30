@@ -2,6 +2,8 @@
 
 Python script to convert Cisco IOS/IOS-XE/NX-OS switch config into YAML data, suitable for use in Ansible.
 
+I've forked this as I need a different YAML format and wanted to update to current Python.
+
 ## Motivation
 
 A simple way to create YAML data from an existing network. This allows migration from old-fashioned manual switch config to an automated "Infrastructure As Code".
