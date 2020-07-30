@@ -1,8 +1,8 @@
 ## Synopsis
 
-Python script to convert Cisco IOS/IOS-XE/NX-OS switch config into YAML data, suitable for use in Ansible.
+Python script to convert Cisco IOS/IOS-XE/NX-OS device config into YAML data, suitable for use in Ansible.
 
-I've forked this as I need a different YAML format and wanted to update to current Python.
+I've forked this as I need a different YAML format and wanted to update to a current Python version.
 
 ## Motivation
 
@@ -21,7 +21,6 @@ Place Cisco switch config files into `/configurations`. Run the script and YAML 
 
 * Specify an alternative directory for a set of Cisco configs with `--root="foo"`. Output will be generated in `/yaml/foo`.
 * Output YAML directly to terminal with `--debug`.
-* Override default domain appended to YAML files with `--domain="foo"`.
 
 ## Tests
 
