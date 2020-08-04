@@ -21,13 +21,11 @@ def main():
           root_path = directory_value.replace('"', '') + '/'
   
   subdirs = [x[1] for x in walk(root_path)] # obtain all subdirectories
-  print(subdirs)
   subdirs.append('.')                    # add root directory
 
   # Parse all files in all subdirectories
   for subdir, dirs, files in walk(root_path):
     for filename in files:
-      print(join(subdir, filename))
       if filename != '.gitignore':                                              # Do not parse .gitignores
         input = CiscoConfParse(subdir + '/' + filename)             # Get our CiscoConfParse-formatted input
         output_yaml = convert_to_yaml(input)                                    # Parse input config into output YAML
@@ -62,7 +60,7 @@ def convert_to_yaml(input_config):
       # Insert interface name
       interface_name = interface.re_match(r'^interface (\S+)$')
       if interface_name:
-          interface_dict['name'] = interface_name
+          interface_dict[interface_name] = {}
 
       # switchport
 
@@ -71,94 +69,94 @@ def convert_to_yaml(input_config):
       if switchport_interfaces:
 
         # Create switchport dict if it does not yet exist
-        if not 'switchport' in interface_dict:
-          interface_dict['switchport'] = {}
+        if not 'switchport' in interface_dict[str(interface_name)]:
+          interface_dict[str(interface_name)]['switchport'] = {}
 
         for line in switchport_interfaces:
 
           # access vlan
           access_vlan = line.re_match(r' switchport access vlan (\S+)')
           if access_vlan:
-            interface_dict['switchport']['access_vlan'] = access_vlan
+            interface_dict[str(interface_name)]['switchport']['access_vlan'] = access_vlan
 
           # switchport mode
           switchport_mode = line.re_match(r'^ switchport mode (\S+)$')
           if switchport_mode:
-            interface_dict['switchport']['mode'] = switchport_mode
+            interface_dict[str(interface_name)]['switchport']['mode'] = switchport_mode
 
           # port-security
           port_sec = line.re_search(r'^ switchport port-security$')
           if port_sec:
-            interface_dict['switchport']['port_security'] = True
+            interface_dict[str(interface_name)]['switchport']['port_security'] = True
 
           # switchport trunk
           switchport_trunk = line.re_search(r'^ switchport trunk.*$')
           if switchport_trunk:
 
             # Create the trunk dict if it does not yet exist
-            if not 'trunk' in interface_dict['switchport']:
-              interface_dict['switchport']['trunk'] = {}
+            if not 'trunk' in interface_dict[str(interface_name)]['switchport']:
+              interface_dict[str(interface_name)]['switchport']['trunk'] = {}
 
             # native vlan
             native_vlan = line.re_match(r'^ switchport trunk native vlan (\S+)$')
             if native_vlan:
-              interface_dict['switchport']['trunk']['native_vlan'] = native_vlan
+              interface_dict[str(interface_name)]['switchport']['trunk']['native_vlan'] = native_vlan
 
             # allowed vlan
             allowed_vlan = line.re_match(r'^ switchport trunk allowed vlan (\S+)$')
             if allowed_vlan:
-              interface_dict['switchport']['trunk']['allowed_vlan'] = allowed_vlan
+              interface_dict[str(interface_name)]['switchport']['trunk']['allowed_vlan'] = allowed_vlan
 
             # trunk encapsulation
             encapsulation = line.re_match(r'^ switchport trunk encapsulation (.+)$')
             if encapsulation:
-              interface_dict['switchport']['trunk']['encapsulation'] = encapsulation
+              interface_dict[str(interface_name)]['switchport']['trunk']['encapsulation'] = encapsulation
 
       # spanning-tree
       spanning_tree = interface.re_search_children(r'spanning-tree')
       if spanning_tree:
         # Create spanning-tree dict if it does not yet exist
-        if not 'spanning_tree' in interface_dict:
-          interface_dict['spanning_tree'] = {}
+        if not 'spanning_tree' in interface_dict[str(interface_name)]:
+          interface_dict[str(interface_name)]['spanning_tree'] = {}
 
         for line in spanning_tree:
 
           # portfast
           portfast = line.re_search(r'^ spanning-tree portfast$')
           if portfast:
-            interface_dict['spanning_tree']['portfast'] = True
+            interface_dict[str(interface_name)]['spanning_tree']['portfast'] = True
 
           # guard_root
           guard_root = line.re_search(r'^ spanning-tree guard root$')
           if guard_root:
-            interface_dict['spanning_tree']['guard_root'] = True
+            interface_dict[str(interface_name)]['spanning_tree']['guard_root'] = True
 
       # ip
       ip = interface.re_search_children(r'^ ip ')
       if ip:
         # Create ip dict if it does not yet exist
         if not 'ip' in interface_dict:
-          interface_dict['ip'] = {}
+          interface_dict[str(interface_name)]['ip'] = {}
 
         for line in ip:
           # ip address
           ip_address = line.re_match(r'^ ip address (.*)$')
           if ip_address:
-            interface_dict['ip']['address'] = ip_address
+            interface_dict[str(interface_name)]['ip']['address'] = ip_address
 
           # ip access_group
           access_group = re.match('^ ip access-group (\S+) (\S+)$', line.text)
           if access_group:
             # Create access_group sub-dict if it does not yet exist
-            if not 'access_group' in interface_dict['ip']:
-              interface_dict['ip']['access_group'] = {}
+            if not 'access_group' in interface_dict[str(interface_name)]['ip']:
+              interface_dict[str(interface_name)]['ip']['access_group'] = {}
 
-            interface_dict['ip']['access_group'][access_group.group(1)] = access_group.group(2)
+            interface_dict[str(interface_name)]['ip']['access_group'][access_group.group(1)] = access_group.group(2)
 
           # ip dhcp snooping trust
           dhcp_snooping_trust = line.re_search(r'^ ip dhcp snooping trust$')
           if dhcp_snooping_trust:
-            interface_dict['ip']['dhcp_snooping_trust'] = True
+            interface_dict[str(interface_name)]['ip']['dhcp_snooping_trust'] = True
 
       # no ip
       no_ip = interface.re_search_children(r'^ no ip ')
@@ -166,46 +164,46 @@ def convert_to_yaml(input_config):
       if no_ip:
         # Create ip dict if it does not yet exist
         if not 'ip' in interface_dict:
-          interface_dict['ip'] = {}
+          interface_dict[str(interface_name)]['ip'] = {}
 
         for line in no_ip:
 
           # no ip address
           no_ip = line.re_search(r'^ no ip address$')
           if no_ip:
-            interface_dict['ip']['ip_address_disable'] = True
+            interface_dict[str(interface_name)]['ip']['ip_address_disable'] = True
 
           # no ip route cache
           no_route_cache = line.re_search(r'^ no ip route-cache$')
           if no_route_cache:
-            interface_dict['ip']['route_cache_disable'] = True
+            interface_dict[str(interface_name)]['ip']['route_cache_disable'] = True
 
           # no ip mroute-cache
           no_mroute_cache = line.re_search(r'^ no ip mroute-cache$')
           if no_mroute_cache:
-            interface_dict['ip']['mroute_cache_disable'] = True
+            interface_dict[str(interface_name)]['ip']['mroute_cache_disable'] = True
 
       # ipv6
       ipv6 = interface.re_search_children(r'^ ipv6 ')
       if ipv6:
-        if not 'ipv6' in interface_dict:
-          interface_dict['ipv6'] = []
+        if not 'ipv6' in interface_dict[str(interface_name)]:
+          interface_dict[str(interface_name)]['ipv6'] = []
 
         for line in ipv6:
           # ra guard
           ra_guard = line.re_search(r'^ ipv6 nd raguard$')
           if ra_guard:
-            interface_dict['ipv6'].append('ra_guard')
+            interface_dict[str(interface_name)]['ipv6'].append('ra_guard')
 
           # ipv6 snooping
           ra_guard = line.re_search(r'^ ipv6 snooping$')
           if ra_guard:
-            interface_dict['ipv6'].append('ipv6_snooping')
+            interface_dict[str(interface_name)]['ipv6'].append('ipv6_snooping')
 
           # ipv6 dhcp guard
           ra_guard = line.re_search(r'^ ipv6 dhcp guard$')
           if ra_guard:
-            interface_dict['ipv6'].append('ipv6_dhcp_guard')
+            interface_dict[str(interface_name)]['ipv6'].append('ipv6_dhcp_guard')
 
       # misc
       misc = interface.re_search_children(r'.*')
@@ -216,37 +214,37 @@ def convert_to_yaml(input_config):
           # description
           interface_description = line.re_match(r'^ description (\S+)$')
           if interface_description:
-            interface_dict['description'] = interface_description
+            interface_dict[str(interface_name)]['description'] = interface_description
 
           # power inline police
           power_inline_police = line.re_search(r'^ power inline police$')
           if power_inline_police:
-            interface_dict['power_inline_police'] = True
+            interface_dict[str(interface_name)]['power_inline_police'] = True
 
           # cdp disable
           cdp_disable = line.re_search(r'^ no cdp enable$')
           if cdp_disable:
-            interface_dict['cdp_disable'] = True
+            interface_dict[str(interface_name)]['cdp_disable'] = True
 
           # shutdown
           shutdown = line.re_search(r'^ shutdown$')
           if shutdown:
-            interface_dict['shutdown'] = True
+            interface_dict[str(interface_name)]['shutdown'] = True
 
           # vrf forwarding
           vrf = line.re_match(r'^ vrf forwarding (.+)$')
           if vrf:
-            interface_dict['vrf'] = vrf
+            interface_dict[str(interface_name)]['vrf'] = vrf
 
           # negotiation
           negotiation = line.re_match(r'^ negotiation (.+)$')
           if negotiation:
-            interface_dict['negotiation'] = negotiation
+            interface_dict[str(interface_name)]['negotiation'] = negotiation
 
           # keepalive disable
           keepalive_disable = line.re_search(r'^ no keepalive$')
           if keepalive_disable:
-            interface_dict['keepalive_disable'] = True
+            interface_dict[str(interface_name)]['keepalive_disable'] = True
 
       # Append the completed interface dict to the interfaces list
       output_config['interfaces'].append(interface_dict)
