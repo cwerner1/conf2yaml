@@ -1,2 +1,5 @@
 # Any config file
 *.svn
+*.ios
+*.config
+*.cfg
