@@ -6,7 +6,6 @@ import re, yaml, sys, pprint
 
 from uciparse import uci
 
-
 # Explicitly specify entry point for clarity's sake
 import uciparse
 
@@ -35,7 +34,7 @@ def main():
 
                 input = uci.UciFile.from_file(subdir + '/' + filename)
 
-                output_yaml = convert_to_yaml(input,filename)  # Parse input config into output YAML
+                output_yaml = convert_to_yaml(input, filename)  # Parse input config into output YAML
                 output_path = 'yaml/' + subdir + '/'
                 print('Outputting ' + output_path + splitext(filename)[0] + '.yaml YAML')
                 write_output_yaml_to_file(output_yaml, output_path, filename)  # Write our YAML to disk
@@ -45,18 +44,18 @@ def main():
 
 
 # The workhorse function that reads the Cisco config and returns our output config object
-def convert_to_yaml(input_config,last_package=""):
+def convert_to_yaml(input_config, last_package=""):
     output_config = {}  # Create master dict for output data
 
-    last_config=""
-    #last_package=""
-    if last_package !="":
+    last_config = ""
+    # last_package=""
+    if last_package != "":
         if last_package not in output_config:
             output_config[last_package] = {}
-    last_option=""
-    last_list=""
-    last_config_obj={}
-    last_list_obj=[]
+    last_option = ""
+    last_list = ""
+    last_config_obj = {}
+    last_list_obj = []
 
     for line in input_config.lines:
         type_of_line = type(line)
@@ -72,14 +71,14 @@ def convert_to_yaml(input_config,last_package=""):
             if last_config_obj != {}:
                 output_config[last_package][last_config].append(last_config_obj)
                 last_config_obj = {}
-          #  output_config[last_package]["package"] = line.normalized()
+        #  output_config[last_package]["package"] = line.normalized()
 
         elif str(type_of_line) == "<class 'uciparse.uci.UciConfigLine'>":
             ##flush old entrys
             ## append last object
 
             if last_list_obj != []:
-                last_config_obj[last_list]=last_list_obj
+                last_config_obj[last_list] = last_list_obj
                 last_list_obj = []
 
             if last_config_obj != {}:
@@ -92,11 +91,11 @@ def convert_to_yaml(input_config,last_package=""):
 
             if line.name != None:
                 last_config_obj[line.section] = line.name
-            #output_config[last_package][last_config].append(line.name)
+            # output_config[last_package][last_config].append(line.name)
 
         elif str(type_of_line) == "<class 'uciparse.uci.UciOptionLine'>":
             last_option = line.name
-            #if last_option not in output_config[last_package][last_config]:
+            # if last_option not in output_config[last_package][last_config]:
             #    output_config[last_package][last_config][last_option] = []
             if last_list_obj != []:
                 last_config_obj[last_list] = last_list_obj
@@ -109,9 +108,9 @@ def convert_to_yaml(input_config,last_package=""):
             last_list = line.name
             # if last_list not in output_config[last_package][last_config]:
             # last_list_obj = []
-                #name_field = _serialize_identifier(_INDENT + "list ", self.name)
-                #value_field = _serialize_value(" ", self.value)
-                #comment_field = _serialize_comment("  ", self.comment)
+            # name_field = _serialize_identifier(_INDENT + "list ", self.name)
+            # value_field = _serialize_value(" ", self.value)
+            # comment_field = _serialize_comment("  ", self.comment)
             if last_list not in last_config_obj:
                 last_config_obj[last_list] = []
 
@@ -119,9 +118,6 @@ def convert_to_yaml(input_config,last_package=""):
         else:
             print(type_of_line)
             exit(6)
-
-
-
 
         ####
 
@@ -135,21 +131,17 @@ def convert_to_yaml(input_config,last_package=""):
         output_config[last_package][last_config].append(last_config_obj)
         last_config_obj = {}
 
-
     # DemoConfig
-    #output_config[last_package]["aa"]= [{"aa1":"bb","cc":"ddd"},{"aa2":"bb","cc":"ddd"}]
+    # output_config[last_package]["aa"]= [{"aa1":"bb","cc":"ddd"},{"aa2":"bb","cc":"ddd"}]
 
-
-    #return "".join([line.normalized() for line in self.lines]).splitlines(keepends=True)
-
+    # return "".join([line.normalized() for line in self.lines]).splitlines(keepends=True)
 
     # Alle zeilen von oben durchgehen und yml aufbauen.
     # beginnent mit Packages
     # dann config weiße
     # darin option und lists durchgehen
 
-
-    return yaml.dump(output_config,sort_keys=False, default_flow_style=0, explicit_start=1)
+    return yaml.dump(output_config, sort_keys=False, default_flow_style=0, explicit_start=1)
 
 
 def write_output_yaml_to_file(output_yaml, output_path, filename):
