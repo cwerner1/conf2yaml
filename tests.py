@@ -6,22 +6,25 @@ from test_data import *
 
 class test_suite(unittest.TestCase):
     def test_firwall_1(self):
-        with fake_filesystem_unittest.Patcher() as patcher:
-            lines = test_firewall_1["input"].split("\n")
-            self.assertEqual( test_firewall_1["output"],convert_to_yaml(uci.UciFile.from_lines(lines)))
+        lines = test_firewall_1["input"].split("\n")
+        self.assertEqual( test_firewall_1["output"],convert_to_yaml(uci.UciFile.from_lines(lines)))
     def test_firewall_2(self):
-        with fake_filesystem_unittest.Patcher() as patcher:
-            lines = test_firewall_2["input"].split("\n")
-            self.assertEqual( test_firewall_2["output"],convert_to_yaml(uci.UciFile.from_lines(lines)))
+        lines = test_firewall_2["input"].split("\n")
+        self.assertEqual( test_firewall_2["output"],convert_to_yaml(uci.UciFile.from_lines(lines)))
 
     def test_firewall_1_with_list(self):
-        with fake_filesystem_unittest.Patcher() as patcher:
-            # patcher.fs.create_file('/mock', contents=test_interface_name_identification["input"])
-
-            lines = test_firewall_1_with_list["input"].split("\n")
-            self.assertEqual(test_firewall_1_with_list["output"], convert_to_yaml(uci.UciFile.from_lines(lines)))
-
+        lines = test_firewall_1_with_list["input"].split("\n")
+        self.assertEqual(test_firewall_1_with_list["output"], convert_to_yaml(uci.UciFile.from_lines(lines)))
+    def test_firewall_3_with_comment(self):
+        lines = test_firewall_3_with_comment["input"].split("\n")
+        self.assertEqual(test_firewall_3_with_comment["output"], convert_to_yaml(uci.UciFile.from_lines(lines)))
                 # def test_interface_cdp_status(self):
+
+    def test_firewall_4_network_named(self):
+        lines = test_firewall_4_network_named["input"].split("\n")
+        self.assertEqual(test_firewall_4_network_named["output"], convert_to_yaml(uci.UciFile.from_lines(lines)))
+
+
     #     with fake_filesystem_unittest.Patcher() as patcher:
     #         patcher.fs.create_file('/mock', contents=test_interface_cdp_status["input"])
     #         self.assertEqual(convert_to_yaml(CiscoConfParse('/mock')), test_interface_cdp_status["output"])

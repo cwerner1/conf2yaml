@@ -85,6 +85,52 @@ firewall:
     target: ACCEPT\n"""
 }
 
+
+test_firewall_3_with_comment = {
+    "input": """package firewall
+    config rule
+    option name 'Allow-MLD' #some Comment
+    option target 'ACCEPT'\n""",
+    "output": """---
+firewall:
+  rule:
+    # some Comment      
+  - name: Allow-MLD
+    target: ACCEPT\n"""
+}
+
+test_firewall_4_network_named = {
+    "input": """package network
+    config interface 'loopback'
+    option ifname 'lo'
+    option proto 'static'
+    option ipaddr '127.0.0.1'
+    option netmask '255.0.0.0'
+
+config interface 'lan'
+    option ifname 'eth1.1'
+    option type 'bridge'
+    option proto 'static'
+    option ipaddr '192.168.15.1'
+    option netmask '255.255.255.0'
+    option ip6assign '32'\n""",
+    "output": """---
+network:
+  interface:
+  - interface: loopback
+    ifname: lo
+    proto: static
+    ipaddr: 127.0.0.1
+    netmask: 255.0.0.0
+  - interface: lan
+    ifname: eth1.1
+    type: bridge
+    proto: static
+    ipaddr: 192.168.15.1
+    netmask: 255.255.255.0
+    ip6assign: '32'\n"""
+}
+
 test_interface_cdp_status = {
     "input":
 """interface GigabitEthernet1/0/1
