@@ -32,9 +32,16 @@ def main():
             if filename != '.gitignore':  # Do not parse .gitignores
                 # input = CiscoConfParse(subdir + '/' + filename)             # Get our CiscoConfParse-formatted input
 
-                input = uci.UciFile.from_file(subdir + '/' + filename)
+                try:
+                    input = uci.UciFile.from_file(subdir + '/' + filename)
 
-                output_yaml = convert_to_yaml(input, filename)  # Parse input config into output YAML
+                    output_yaml = convert_to_yaml(input, filename)  # Parse input config into output YAML
+                except:
+                    print("An exception occurred" )
+                    print("skipping " + subdir + '/' + filename)
+                    continue
+
+
                 output_path = 'yaml/' + subdir + '/'
                 print('Outputting ' + output_path + splitext(filename)[0] + '.yaml YAML')
                 write_output_yaml_to_file(output_yaml, output_path, filename)  # Write our YAML to disk
