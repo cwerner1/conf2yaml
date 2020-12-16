@@ -1,6 +1,6 @@
 ## Synopsis
 
-Python script to convert Cisco IOS/IOS-XE/NX-OS device config into YAML data, suitable for use in Ansible.
+Python script to convert Openwrt uci device config into YAML data, suitable for use in Ansible.
 
 I've forked this because I want to take it in a different direction. I need a different YAML format and wanted to update to a current Python version.
 
@@ -15,7 +15,7 @@ A simple way to create YAML data from an existing network. This allows migration
 
 ## Usage
 
-Place Cisco switch config files into `/configurations`. Run the script and YAML files will be generated in `/yaml/configurations`.
+Place openwrt UCI  config files into `/configurations`. Run the script and YAML files will be generated in `/yaml/configurations`.
 
 ### Optional arguments
 

@@ -1,11 +1,88 @@
 #
 # Define the file input and expected output for each test case
 #
-test_interface_name_identification = {
-    "input": "interface GigabitEthernet1/0/1",
+
+test_firewall_1 = {
+    "input": """package firewall
+    config rule
+    option name 'Allow-MLD'
+    option src 'wan'
+    option proto 'icmp'
+    option src_ip 'fe80::/10'
+    option family 'ipv6'
+    option target 'ACCEPT'\n""",
     "output": """---
-interfaces:
-- name: GigabitEthernet1/0/1\n"""
+firewall:
+  rule:
+  - name: Allow-MLD
+    src: wan
+    proto: icmp
+    src_ip: fe80::/10
+    family: ipv6
+    target: ACCEPT\n"""
+}
+test_firewall_2 = {
+    "input": """package firewall
+config rule
+    option name 'Allow-MLD'
+    option src 'wan'
+    option proto 'icmp'
+    option src_ip 'fe80::/10'
+    option family 'ipv6'
+    option target 'ACCEPT'
+config rule
+    option name 'DROP-MLsadsdsaD'
+    option src 'lan'
+    option proto 'tcp'
+    option src_ip 'fe80::/10'
+    option family 'ipv4'
+    option target 'DROP'\n
+    \n""",
+    "output": """---
+firewall:
+  rule:
+  - name: Allow-MLD
+    src: wan
+    proto: icmp
+    src_ip: fe80::/10
+    family: ipv6
+    target: ACCEPT
+  - name: DROP-MLsadsdsaD
+    src: lan
+    proto: tcp
+    src_ip: fe80::/10
+    family: ipv4
+    target: DROP\n"""
+}
+
+
+test_firewall_1_with_list = {
+    "input": """package firewall
+    config rule
+    option name 'Allow-MLD'
+    option src 'wan'
+    option proto 'icmp'
+    option src_ip 'fe80::/10'
+    list icmp_type '130/0'
+    list icmp_type '131/0'
+    list icmp_type '132/0'
+    list icmp_type '143/0'
+    option family 'ipv6'
+    option target 'ACCEPT'\n""",
+    "output": """---
+firewall:
+  rule:
+  - name: Allow-MLD
+    src: wan
+    proto: icmp
+    src_ip: fe80::/10
+    icmp_type:
+    - 130/0
+    - 131/0
+    - 132/0
+    - 143/0
+    family: ipv6
+    target: ACCEPT\n"""
 }
 
 test_interface_cdp_status = {

@@ -1,4 +1,3 @@
 wheel==0.34.2
-ciscoconfparse==1.2.47
 yamllint==1.8.1
 pyfakefs==3.4.1
