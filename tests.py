@@ -23,6 +23,9 @@ class test_suite(unittest.TestCase):
     def test_firewall_4_network_named(self):
         lines = test_firewall_4_network_named["input"].split("\n")
         self.assertEqual(test_firewall_4_network_named["output"], convert_to_yaml(uci.UciFile.from_lines(lines)))
+    def test_beardropper(self):
+        lines = test_beardropper["input"].split("\n")
+        self.assertEqual(test_beardropper["output"], convert_to_yaml(uci.UciFile.from_lines(lines)))
 
 
     #     with fake_filesystem_unittest.Patcher() as patcher:

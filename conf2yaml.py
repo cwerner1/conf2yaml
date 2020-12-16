@@ -122,6 +122,11 @@ def convert_to_yaml(input_config, last_package=""):
                 last_config_obj[last_list] = []
 
             last_config_obj[last_list].append(line.value)
+        elif str(type_of_line) == "<class 'uciparse.uci.UciCommentLine'>":
+            # Dont do anyything
+
+            i=1
+            #print("skipping Comment Line")
         else:
             print(type_of_line)
             exit(6)

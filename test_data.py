@@ -55,7 +55,6 @@ firewall:
     target: DROP\n"""
 }
 
-
 test_firewall_1_with_list = {
     "input": """package firewall
     config rule
@@ -84,7 +83,6 @@ firewall:
     family: ipv6
     target: ACCEPT\n"""
 }
-
 
 test_firewall_3_with_comment = {
     "input": """package firewall
@@ -131,15 +129,36 @@ network:
     ip6assign: '32'\n"""
 }
 
-test_interface_cdp_status = {
+test_beardropper = {
     "input":
-"""interface GigabitEthernet1/0/1
- no cdp enable""",
+        """package bearDropper
+        
+config bearDropper
+option defaultMode 'entire'
+list firewallHookChain 'input_wan_rule:1'
+list firewallHookChain 'forwarding_wan_rule:1'
+list firewallHookChain 'input_lan_rule:1'
+list firewallHookChain 'forwarding_lan_rule:1'
+option firewallTarget 'DROP'
+
+list logRegex '/has invalid shell, rejected$/d'
+option attemptCount '5'
+option banLength '100w'""",
     "output":
-"""---
-interfaces:
-- cdp_disable: true
-  name: GigabitEthernet1/0/1\n"""
+        """---
+bearDropper:
+  bearDropper:
+  - defaultMode: entire
+    firewallHookChain:
+    - input_wan_rule:1
+    - forwarding_wan_rule:1
+    - input_lan_rule:1
+    - forwarding_lan_rule:1
+    firewallTarget: DROP
+    logRegex:
+    - /has invalid shell, rejected$/d
+    attemptCount: '5'
+    banLength: 100w\n"""
 }
 
 test_interface_switchport_access_vlan = {
