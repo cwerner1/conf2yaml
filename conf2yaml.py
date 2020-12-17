@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+
 from os import walk, makedirs, listdir
 from os.path import isfile, join, splitext, exists
 import re, yaml, sys, pprint
 
 from uciparse import uci
-
 # Explicitly specify entry point for clarity's sake
 import uciparse
 
@@ -14,7 +14,7 @@ def main():
     # Permit limited configuration via command-line args
     debug = False  # Debug YAML to console defaults to off: enable with --debug
     root_path = 'configurations/'  # Root dir is 'configurations': modify with --root="mydir"
-    if (len(sys.argv) > 1):
+    if len(sys.argv) > 1:
         for arg in sys.argv:
             if arg == '--debug':
                 debug = True
@@ -150,7 +150,7 @@ def convert_to_yaml(input_config, last_package=""):
 
     # Alle zeilen von oben durchgehen und yml aufbauen.
     # beginnent mit Packages
-    # dann config weiße
+    # dann config weise
     # darin option und lists durchgehen
 
     return yaml.dump(output_config, sort_keys=False, default_flow_style=0, explicit_start=1)
